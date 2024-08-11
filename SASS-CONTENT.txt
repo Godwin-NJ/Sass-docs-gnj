@@ -1,0 +1,266 @@
+*****************************
+- Research 
+- Take notes 
+- write an outline 
+- write 
+- edit 
+- publish 
+- using SASS in a Vite JS Project 
+
+***Steps part (1) -> Theoritical write up ***
+- brief introduction 
+    -> extract information from earlier article i.e ( SASS-Article > C:\Users\ITAP006\Desktop\TECHNICAL WRITING\2024\SASS)
+- brief usage
+- major usage of some of its features ( as stated in my booklet )
+
+****Part (2) Project demonstration **********
+- prepare Vite envr
+- Vite project with React 
+
+
+Reference 
+https://www.freecodecamp.org/news/how-to-use-sass-with-css/
+https://sass-lang.com/documentation/at-rules/use/
+https://www.geeksforgeeks.org/sass-function-rule/
+
+Manuel way for watching files 
+> sass --watch style.scss style.css
+ 
+*********************************
+
+--->>> brief introduction   <<<-----------
+Sass is a stylesheet language that’s compiled to CSS. It allows you to use variables, nested rules, mixins, 
+functions, and more, all with a fully CSS-compatible syntax. 
+Sass helps keep large stylesheets well-organized and makes it easy to share design within and across projects.
+
+Just like CSS, most Sass stylesheets are mainly made up of style rules that contain property declarations. 
+But Sass stylesheets have many more features that can exist alongside these
+
+Statements
+A Sass stylesheet is made up of a series of statements, which are evaluated in order to build the resulting CSS. 
+Some statements may have blocks, defined using { and }, which contain other statements. 
+For example, a style rule is a statement with a block. 
+That block contains other statements, such as property declarations.
+
+Universal Statements
+These types of statements can be used anywhere in a Sass stylesheet:
+-Variable declarations, like $var: value.
+-Flow control at-rules, like @if and @each.
+-The @error, @warn, and @debug rules.
+
+CSS Statements
+These statements produce CSS. They can be used anywhere except within a @function:
+Style rules, like h1 { /* ... */ }.
+CSS at-rules, like @media and @font-face.
+Mixin uses using @include.
+
+Top-Level Statements
+These statements can only be used at the top level of a stylesheet, or nested within a CSS statement at the top level:
+Module loads, using @use.
+Imports, using @import.
+Mixin definitions using @mixin.
+Function definitions using @function.
+
+Other Statements
+Property declarations like width: 100px may only be used within style rules and some CSS at-rules.
+The @extend rule may only be used within style rules.
+
+*******I will now be looking into partcular scss features as indicated from my table of context.************** 
+
+1)Variables
+Sass variables are simple: you assign a value to a name that begins with $, 
+and then you can refer to that name instead of the value itself.
+But despite their simplicity, they’re one of the most useful tools Sass brings to the table. 
+Variables make it possible to reduce repetition, 
+do complex math, configure libraries, and much more.
+
+e.g => 
+$base-color: #c6538c;
+$border-dark: rgba($base-color, 0.88);
+
+.alert {
+  border: 1px solid $border-dark;
+}
+
+Note => Normally when you assign a value to a variable, if that variable already had a value, 
+its old value is overwritten. 
+But if you’re writing a Sass library, you might want to allow your users to 
+configure your library’s variables before you use them to generate CSS.
+
+To make this possible, Sass provides the !default flag. This assigns a value to a variable only if that variable 
+isn’t defined or its value is null. Otherwise, the existing value will be used.
+
+// _library.scss
+$black: #000 !default;
+$border-radius: 0.25rem !default;
+$box-shadow: 0 0.5rem 1rem rgba($black, 0.15) !default;
+
+code {
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+}
+
+// style.scss
+@use 'library' with (
+  $black: #222,
+  $border-radius: 0.1rem
+);
+
+N/B->Only variables written at the top level of the stylesheet with a !default flag can be configured.
+
+Scope For Variables 
+=> Variables declared at the top level of a stylesheet are global. 
+This means that they can be accessed anywhere in their module after they’ve been declared. 
+
+2)Mixins -> Mixins allow you to define styles that can be re-used throughout your stylesheet. 
+They make it easy to avoid using non-semantic classes like .float-left, 
+Mixins are included into the current context using the @include at-rule,
+which is written @include <name> or @include <name>(<arguments...>), 
+with the name of the mixin being included.
+and to distribute collections of styles in libraries.
+*****Example below ********
+@mixin reset-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@mixin horizontal-list {
+  @include reset-list;
+
+  li {
+    display: inline-block;
+    margin: {
+      left: -2px;
+      right: 2em;
+    }
+  }
+}
+
+nav ul {
+  @include horizontal-list;
+}
+
+
+3) Functions allow you to define complex operations on SassScript values that you can re-use 
+throughout your stylesheet. They make it easy to abstract out common formulas and behaviors in a 
+readable way.
+***Example***
+(a)@function some-func($param) {
+    @return (100/$param);
+  }
+ 
+ .col-6 { font-size: some-func(5);}
+
+(b) @function add($numbers...) { 
+   $add: 0; 
+   @each $number in $numbers { 
+    $add: $add + $number; 
+   } 
+   @return $add; 
+ } 
+  
+ .gfg { 
+  width: add(50, 30, 100); 
+ }
+
+Note -> Sometimes it’s useful for a function to be able to take any number of arguments. 
+If the last argument in a @function declaration ends in ..., then all extra arguments to 
+that function are passed to that argument as a list. This argument is known as an argument list.
+
+4a)The @use rule loads mixins, functions, and variables from other Sass stylesheets, and combines CSS 
+from multiple stylesheets together. Stylesheets loaded by @use are called "modules". 
+Sass also provides built-in modules full of useful functions.
+N/B -> The simplest @use rule is written @use "<url>", which loads the module at the given URL. 
+Any styles loaded this way will be included exactly once 
+in the compiled CSS output, no matter how many times those styles are loaded.
+-A stylesheet’s @use rules must come before any rules other than @forward, including style rules. 
+However, you can declare variables before @use rules to use when configuring modules.
+e.g => // style.scss
+	@use "src/corners";
+
+.button {
+  @include corners.rounded;
+  padding: 5px + corners.$radius;
+}
+
+- By default, a module’s namespace is just the last component of its URL without a file extension. However, 
+sometimes you might want to choose a different namespace—you might want to use a shorter name 
+for a module you refer to a lot, or you might be loading multiple modules with the same filename. 
+You can do this by writing @use "<url>" as <namespace>.
+// style.scss
+@use "src/corners" as c;
+
+.button {
+  @include c.rounded;
+  padding: 5px + c.$radius;
+}
+-You can even load a module without a namespace by writing @use "<url>" as *. 
+We recommend you only do this for stylesheets written by you, though; otherwise, 
+they may introduce new members that cause name conflicts!
+// style.scss
+@use "src/corners" as *;
+
+.button {
+  @include rounded;
+  padding: 5px + $radius;
+}
+
+4b)@import -> Sass extends CSS’s @import rule with the ability to import Sass and CSS stylesheets, providing access to mixins, functions, and variables 
+and combining multiple stylesheets’ CSS together. Unlike plain CSS imports, which require the browser to make multiple HTTP requests as 
+it renders your page, Sass imports are handled entirely during compilation.
+
+Sass imports have the same syntax as CSS imports, except that they allow multiple imports to be separated by commas rather 
+than requiring each one to have its own @import. Also, in the indented syntax, imported URLs aren’t required to have quotes.
+
+****example****
+// foundation/_code.scss
+code {
+  padding: .25em;
+  line-height: 0;
+}
+// foundation/_lists.scss
+ul, ol {
+  text-align: left;
+
+  & & {
+    padding: {
+      bottom: 0;
+      left: 0;
+    }
+  }
+}
+
+// style.scss
+@import 'foundation/code', 'foundation/lists';
+
+N/B -> You don’t have to explicitly write out the extension of the file you want to import; @import "variables" will automatically load variables.scss, variables.sass, or variables.css.
+
+
+
+5)@extend -> This the ability of a class to extends / expands its style by including style
+from another class using the @extend rule. 
+***********example*********
+***using sass****
+.error
+  border: 1px #f00
+  background-color: #fdd
+
+  &--serious
+    @extend .error
+    border-width: 3px
+
+****uisng Css***
+.error, .error--serious {
+  border: 1px #f00;
+  background-color: #fdd;
+}
+.error--serious {
+  border-width: 3px;
+}
+
+
+SASS PROJECT 
+-  display colourful items ( sales items )
+
+ISSUE -> Blank screen when displaying a react component in APP.jsx - resolved

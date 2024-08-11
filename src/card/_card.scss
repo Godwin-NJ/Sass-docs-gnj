@@ -1,0 +1,40 @@
+@use "../style" as sc;
+// @import "_style.scss";
+$cardBackground: rgb(194, 164, 164);
+.card {
+  max-width: 25vw;
+  min-height: 40vh;
+  border-radius: 5px;
+  padding: 2px;
+  background-color: $cardBackground;
+  overflow-y: hidden;
+
+  text-align: center;
+  button {
+    padding: 10px;
+    border-radius: 10px;
+    border-width: 0px;
+    outline-style: none;
+    width: 150px;
+    background-color: sc.$card-color;
+    font-size: 15px;
+    &:hover {
+      background-color: sc.$card-hover-color;
+      color: sc.$card-white-color;
+    }
+  }
+}
+
+.cardName {
+  font-size: 35px;
+  margin-top: 0px;
+}
+
+.cardDesc {
+  margin-top: -15px;
+  font-size: 20px;
+}
+.itemImg {
+  width: 25vw;
+  max-height: 35vh;
+}
